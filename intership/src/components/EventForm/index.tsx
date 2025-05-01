@@ -3,13 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
 import { db, auth } from "@/data/firebase";
-
-type Event = {
-  title: string;
-  date: string;
-  description: string;
-  priority: "normal" | "important" | "critical";
-};
+import { Event } from "@/data/events";
 
 interface Props {
   initialData?: Event;
@@ -26,7 +20,15 @@ const EventForm: React.FC<Props> = ({ initialData, eventId, onClose }) => {
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
-      setDate(initialData.date);
+
+      // Якщо дата є рядком, конвертуємо її в ISO формат для input type="datetime-local"
+      if (typeof initialData.date === "string") {
+        const parsedDate = new Date(initialData.date);
+        if (!isNaN(parsedDate.getTime())) {
+          setDate(parsedDate.toISOString().slice(0, 16)); // Форматуємо для datetime-local
+        }
+      }
+
       setDescription(initialData.description);
       setPriority(initialData.priority);
     }
@@ -65,10 +67,32 @@ const EventForm: React.FC<Props> = ({ initialData, eventId, onClose }) => {
     <div className="max-w-lg mx-auto p-4 bg-white rounded shadow">
       <h2 className="text-xl font-bold mb-4">{eventId ? "Edit" : "Add"} Event</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input value={title} onChange={(e) => setTitle(e.target.value)} className="w-full p-2 border rounded" placeholder="Title" required />
-        <input type="datetime-local" value={date} onChange={(e) => setDate(e.target.value)} className="w-full p-2 border rounded" required />
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="w-full p-2 border rounded" placeholder="Description" rows={4} />
-        <select value={priority} onChange={(e) => setPriority(e.target.value as any)} className="w-full p-2 border rounded">
+        <input
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="w-full p-2 border rounded"
+          placeholder="Title"
+          required
+        />
+        <input
+          type="datetime-local"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="w-full p-2 border rounded"
+          required
+        />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full p-2 border rounded"
+          placeholder="Description"
+          rows={4}
+        />
+        <select
+          value={priority}
+          onChange={(e) => setPriority(e.target.value as "normal" | "important" | "critical")}
+          className="w-full p-2 border rounded"
+        >
           <option value="normal">Normal</option>
           <option value="important">Important</option>
           <option value="critical">Critical</option>

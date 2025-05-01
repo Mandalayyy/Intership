@@ -1,12 +1,14 @@
-// src/components/SignUp/index.tsx
-"use client"; // Це клієнтський компонент
+"use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Замість next/router
+import { useRouter } from "next/navigation";
 import { signUpWithEmailPassword } from "../../services/authService";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/store/authSlice"; // Імпортуємо екшн для оновлення стейту
 
 const SignUp = () => {
   const router = useRouter();
+  const dispatch = useDispatch(); // Ініціалізація dispatch
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,9 +19,10 @@ const SignUp = () => {
     setLoading(true);
     setError("");
 
-    const success = await signUpWithEmailPassword(email, password);
+    const user = await signUpWithEmailPassword(email, password); // Оновлено на отримання користувача
 
-    if (success) {
+    if (user) {
+      dispatch(setUser(user)); // Оновлення стейту в Redux
       router.push("/home");
     } else {
       setError("Failed to sign up. Please try again.");

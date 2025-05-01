@@ -1,11 +1,14 @@
-"use client"; // Додано для позначення компонента як клієнтського
+"use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Замість next/router
+import { useRouter } from "next/navigation";
 import { signInWithEmailPassword, signInWithGoogle } from "../../services/authService";
+import { useDispatch } from "react-redux"; 
+import { setUser } from "@/store/authSlice"; // Імпортуємо екшн для оновлення стейту
 
 const SignIn = () => {
-  const router = useRouter(); // Використання useRouter з next/navigation
+  const router = useRouter();
+  const dispatch = useDispatch(); // Ініціалізація dispatch
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -16,10 +19,11 @@ const SignIn = () => {
     setLoading(true);
     setError("");
 
-    const success = await signInWithEmailPassword(email, password);
+    const user = await signInWithEmailPassword(email, password); // Оновлено на отримання користувача
 
-    if (success) {
-      router.push("/home"); // Редірект після успішного входу
+    if (user) {
+      dispatch(setUser(user)); // Оновлення стейту в Redux
+      router.push("/home");
     } else {
       setError("Invalid credentials. Please try again.");
     }
@@ -29,9 +33,10 @@ const SignIn = () => {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-    const success = await signInWithGoogle();
-    if (success) {
-      router.push("/home"); // Редірект після успішного входу через Google
+    const user = await signInWithGoogle(); // Оновлено на отримання користувача
+    if (user) {
+      dispatch(setUser(user)); // Оновлення стейту в Redux
+      router.push("/home");
     } else {
       setError("Failed to sign in with Google. Please try again.");
     }

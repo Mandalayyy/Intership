@@ -1,16 +1,7 @@
 "use client";
 
 import React from "react";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/data/firebase";
-
-interface Event {
-  id: string;
-  title: string;
-  date: any; // або Timestamp
-  description: string;
-  priority: "normal" | "important" | "critical";
-}
+import { deleteEvent, Event } from "@/data/events";
 
 const EventCard: React.FC<{
   event: Event;
@@ -22,20 +13,28 @@ const EventCard: React.FC<{
     if (!confirmDelete) return;
 
     try {
-      await deleteDoc(doc(db, "events", event.id));
+      if (!event.id) {
+        console.error("Event ID is undefined. Cannot delete event.");
+        return;
+      }
+      await deleteEvent(event.id);
       onDeleteSuccess?.();
     } catch (error) {
       console.error("Failed to delete event:", error);
     }
   };
 
+  // Перевірка і обробка дати
+  const eventDate = typeof event.date === "string" 
+    ? new Date(event.date) 
+    : event.date?.toDate?.() || new Date(event.date.seconds * 1000);
+
+  const formattedDate = eventDate?.toLocaleString() ?? "Unknown date";
+
   return (
     <div className="border p-4 mb-4 rounded-lg shadow-md relative">
       <h3 className="font-bold text-xl">{event.title}</h3>
-      <p className="text-gray-500">
-        {event.date?.toDate?.().toLocaleString() ??
-          new Date(event.date.seconds * 1000).toLocaleString()}
-      </p>
+      <p className="text-gray-500">{formattedDate}</p>
       <p className="mt-2">{event.description}</p>
       <span
         className={`mt-2 inline-block rounded px-2 py-1 text-white ${

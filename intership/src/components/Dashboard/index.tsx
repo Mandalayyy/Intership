@@ -1,57 +1,64 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db, auth } from "@/data/firebase";
+import React, { useEffect } from "react";
+import { Event } from "@/data/events";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/data/firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchEvents } from "@/store/eventsSlice";
 import EventCard from "@/components/EventCard";
-import EventForm from "@/components/EventForm"; // Ваш компонент для додавання івентів
-
+import EventForm from "@/components/EventForm";
+import { RootState } from "@/store/store";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 const Dashboard: React.FC = () => {
-  const [events, setEvents] = useState<any[]>([]); // Стан для подій
-  const [editingEvent, setEditingEvent] = useState<any | null>(null); // Стан для редагування
-  const [showAddEvent, setShowAddEvent] = useState(false); // Стан для показу форми додавання
+  const dispatch = useAppDispatch();
+
+  const { events, loading, error } = useSelector((state: RootState) => state.events);
+
+  const [editingEvent, setEditingEvent] = React.useState<Event | null>(null);
+  const [showAddEvent, setShowAddEvent] = React.useState(false);
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      if (!auth.currentUser) return;
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        dispatch(fetchEvents(user.uid));
+      }
+    });
 
-      const q = query(
-        collection(db, "events"),
-        where("userId", "==", auth.currentUser.uid)
-      );
-      const querySnapshot = await getDocs(q);
-      const eventsData = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setEvents(eventsData);
-    };
+    return () => unsubscribe();  
+  }, [dispatch]);
 
-    fetchEvents();
-  }, [auth.currentUser]);
-
-  const handleEditEvent = (event: any) => {
+  const handleEditEvent = (event: Event) => {
     setEditingEvent(event);
-    setShowAddEvent(true); // Відкрити форму редагування
+    setShowAddEvent(true);
   };
 
   const handleDeleteSuccess = () => {
-    if (!editingEvent) return; // Перевірка на наявність editingEvent
-    setEvents(events.filter((event) => event.id !== editingEvent.id)); // Оновити список після видалення
-    setEditingEvent(null);
+    const user = auth.currentUser;
+    if (user) {
+      dispatch(fetchEvents(user.uid));
+    }
   };
 
   const handleCloseForm = () => {
     setEditingEvent(null);
-    setShowAddEvent(false); // Закрити форму додавання/редагування
+    setShowAddEvent(false);
+    const user = auth.currentUser;
+    if (user) {
+      dispatch(fetchEvents(user.uid));
+    }
   };
 
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold">Dashboard</h2>
+
       <div className="my-4">
         <button
-          onClick={() => setShowAddEvent(true)}
+          onClick={() => {
+            setEditingEvent(null);
+            setShowAddEvent(true);
+          }}
           className="bg-blue-500 text-white px-4 py-2 rounded"
         >
           Add Event
@@ -60,14 +67,18 @@ const Dashboard: React.FC = () => {
 
       {showAddEvent && (
         <EventForm
-          eventId={editingEvent}
+          eventId={editingEvent?.id}
           onClose={handleCloseForm}
-          initialData={editingEvent}
+          initialData={editingEvent || undefined}
         />
       )}
 
       <div>
-        {events.length === 0 ? (
+        {loading ? (
+          <p>Loading...</p> 
+        ) : error ? (
+          <p>Error: {error}</p> 
+        ) : events.length === 0 ? (
           <p>No events found.</p>
         ) : (
           events.map((event) => (

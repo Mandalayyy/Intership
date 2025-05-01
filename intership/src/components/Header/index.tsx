@@ -1,7 +1,7 @@
-"use client"; 
+"use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link"; 
+import Link from "next/link";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/data/firebase";
 import SignOut from "@/components/SignOut";
@@ -18,17 +18,24 @@ const Header: React.FC = () => {
       }
     });
 
-    return () => unsubscribe(); 
+    return () => unsubscribe();
   }, []);
 
   return (
     <header className="bg-blue-500 p-4 text-white">
       <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-2xl">My App</h1>
+       
+        <Link
+          href="/"
+        >
+         <h1 className="text-2xl">My App</h1>
+        </Link>
         <div>
           {user ? (
             <>
-              <span className="mr-4">Welcome, {user.displayName || user.email}</span>
+              <span className="mr-4">
+                Welcome, {user.displayName || user.email}
+              </span>
               <SignOut />
             </>
           ) : (

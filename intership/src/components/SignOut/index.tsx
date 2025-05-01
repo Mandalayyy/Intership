@@ -1,4 +1,3 @@
-// src/components/SignOut.tsx
 'use client';
 
 import { auth } from '@/data/firebase';
