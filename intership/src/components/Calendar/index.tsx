@@ -23,7 +23,6 @@ const Calendar: React.FC<CalendarProps> = ({ events, onEditEvent }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState<View>("month");
 
-  // Конвертація подій з Firebase Timestamp у Date
   const convertedEvents = useMemo(() => {
     return events.map((event) => ({
       ...event,
@@ -39,12 +38,10 @@ const Calendar: React.FC<CalendarProps> = ({ events, onEditEvent }) => {
     }));
   }, [events]);
 
-  // Обробка кліку по події
   const handleSelectEvent = (event: Event) => {
     onEditEvent(event);
   };
 
-  // Обробка кліку по порожній клітинці для створення події
   const handleSelectSlot = (slotInfo: {
     start: Date;
     end: Date;
@@ -61,19 +58,14 @@ const Calendar: React.FC<CalendarProps> = ({ events, onEditEvent }) => {
     onEditEvent(newEvent);
   };
 
-  // Обробка зміни виду (місяць, тиждень, день)
   const handleViewChange = (view: View) => {
-    console.log("View changed to:", view);
     setCurrentView(view);
   };
 
-  // Обробка зміни дати при навігації
   const handleNavigate = (date: Date) => {
-    console.log("Navigated to:", date);
     setCurrentDate(date);
   };
 
-  // Стилізація подій за пріоритетом
   const eventStyleGetter = (event: Event) => {
     let bgColor = "#3174ad";
     if (event.priority === "important") bgColor = "#eab308";
@@ -90,9 +82,9 @@ const Calendar: React.FC<CalendarProps> = ({ events, onEditEvent }) => {
     };
   };
 
-
   return (
-    <div className="p-2">
+    <div className="p-4 bg-white shadow-lg rounded-lg">
+      <h2 className="text-2xl font-bold text-gray-800 mb-4">Event Calendar</h2>
       <BigCalendar
         localizer={localizer}
         events={convertedEvents}
@@ -109,6 +101,7 @@ const Calendar: React.FC<CalendarProps> = ({ events, onEditEvent }) => {
         onSelectEvent={handleSelectEvent}
         onSelectSlot={handleSelectSlot}
         eventPropGetter={eventStyleGetter}
+        className="bg-gray-100 rounded-lg"
       />
     </div>
   );

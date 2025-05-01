@@ -22,12 +22,12 @@ export interface Event {
 }
 const eventsCollection = collection(db, "events");
 
-// ======= 🟢 CREATE (для продакшену) =======
+
 export const createEvent = async (event: Event) => {
   return await addDoc(eventsCollection, event);
 };
 
-// ======= 🔵 READ (з можливістю фільтрувати по userId) =======
+
 export const fetchEvents = async (userId?: string): Promise<Event[]> => {
   const q = userId
     ? query(eventsCollection, where("userId", "==", userId))
@@ -40,19 +40,18 @@ export const fetchEvents = async (userId?: string): Promise<Event[]> => {
   })) as Event[];
 };
 
-// ======= 🟡 UPDATE =======
+
 export const updateEvent = async (id: string, event: Partial<Event>) => {
   const eventRef = doc(db, "events", id);
   return await updateDoc(eventRef, event);
 };
 
-// ======= 🔴 DELETE =======
+
 export const deleteEvent = async (id: string) => {
   const eventRef = doc(db, "events", id);
   return await deleteDoc(eventRef);
 };
 
-// ======= 🔍 GET BY ID =======
 export const getEvent = async (id: string): Promise<Event | null> => {
   const eventRef = doc(db, "events", id);
   const snapshot = await getDoc(eventRef);
@@ -60,7 +59,6 @@ export const getEvent = async (id: string): Promise<Event | null> => {
   return { id: snapshot.id, ...snapshot.data() } as Event;
 };
 
-// ======= 🧪 TEST-ФУНКЦІЇ для перевірки (залишено для дебагу) =======
 export const addTestEvent = async () => {
   try {
     const docRef = await addDoc(collection(db, "events"), {

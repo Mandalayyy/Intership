@@ -3,42 +3,41 @@
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/data/firebase"; // Ваш Firebase конфігураційний файл
+import { auth } from "@/data/firebase";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
-  const pathname = usePathname(); // Using Next.js usePathname to get the current path
-  const [loading, setLoading] = useState(true); // State to handle loading state
+  const pathname = usePathname();
+  const [loading, setLoading] = useState(true);
 
-  // Перевірка авторизації через Firebase
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setUser(user); // Якщо користувач є, оновлюємо стан
+        setUser(user); 
       } else {
-        setUser(null); // Якщо користувача немає, ставимо null
+        setUser(null);
       }
-      setLoading(false); // Після перевірки стану користувача, припиняємо завантаження
+      setLoading(false);
     });
 
-    return () => unsubscribe(); // Очищаємо підписку, коли компонент розмонтується
+    return () => unsubscribe();
   }, []);
 
-  // Логіка редиректу для неавторизованих користувачів
   useEffect(() => {
     if (!user && !["/signin", "/signup"].includes(pathname)) {
-      // Якщо користувач не авторизований і намагається зайти на захищену сторінку
-      router.push("/signin"); // Перенаправлення на /signin
+
+      router.push("/signin"); 
     }
 
-    // Якщо користувач авторизований, і намагається зайти на /signin або /signup, редирект на /dashboard
+
     if (user && ["/signin", "/signup"].includes(pathname)) {
       router.push("/");
     }
   }, [user, router, pathname]);
 
-  if (loading) return <p>Loading...</p>; // Показуємо спінер або повідомлення під час перевірки стану користувача
+  if (loading) return <p>Loading...</p>;
 
-  return <>{children}</>; // Якщо користувач авторизований, рендеримо children
+  return <>{children}</>;
 }

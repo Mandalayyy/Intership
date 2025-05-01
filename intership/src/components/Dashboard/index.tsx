@@ -4,8 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchEvents } from "@/store/eventsSlice";
 import { RootState } from "@/store/store";
-import EventList from "@/components/EventList"; // Компонент списку подій
-import Calendar from "@/components/Calendar"; // Компонент календаря
+import EventList from "@/components/EventList";
+import Calendar from "@/components/Calendar"; 
 import Modal from "@/components/Modal";
 import EventForm from "@/components/EventForm";
 import { Event } from "@/data/events";
@@ -21,9 +21,9 @@ const Dashboard: React.FC = () => {
 
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [showAddEvent, setShowAddEvent] = useState(false);
-  const [viewMode, setViewMode] = useState<"calendar" | "list">("list"); // Режим перегляду
-  const [searchQuery, setSearchQuery] = useState(""); // Пошуковий запит
-  const [priorityFilter, setPriorityFilter] = useState<"normal" | "important" | "critical" | "">(""); // Фільтр за важливістю
+  const [viewMode, setViewMode] = useState<"calendar" | "list">("list"); 
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const [priorityFilter, setPriorityFilter] = useState<"normal" | "important" | "critical" | "">(""); 
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -56,7 +56,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Функція для фільтрації подій
+ 
   const filteredEvents = events.filter((event) => {
     const matchesSearch =
       event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -69,18 +69,24 @@ const Dashboard: React.FC = () => {
   });
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold">Dashboard</h2>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h2 className="text-3xl font-bold text-gray-800 mb-6">Dashboard</h2>
 
-      <div className="my-4">
+      <div className="flex justify-between items-center mb-6">
         <button
           onClick={() => {
             setEditingEvent(null);
             setShowAddEvent(true);
           }}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded shadow-md transition duration-300"
         >
           Add Event
+        </button>
+        <button
+          onClick={() => setViewMode(viewMode === "calendar" ? "list" : "calendar")}
+          className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded shadow-md transition duration-300"
+        >
+          {viewMode === "calendar" ? "Switch to List View" : "Switch to Calendar View"}
         </button>
       </div>
 
@@ -94,21 +100,16 @@ const Dashboard: React.FC = () => {
         </Modal>
       )}
 
-      {/* Пошук подій */}
-      <div className="mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 overflow-visible">
         <input
           type="text"
           placeholder="Search events"
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
-      </div>
-
-      {/* Фільтр по важливості */}
-      <div className="mb-4">
         <select
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={priorityFilter}
           onChange={(e) => setPriorityFilter(e.target.value as "normal" | "important" | "critical" | "")}
         >
@@ -119,26 +120,15 @@ const Dashboard: React.FC = () => {
         </select>
       </div>
 
-      {/* Перемикач між режимами календаря та списку */}
-      <div className="mb-4">
-        <button
-          onClick={() => setViewMode(viewMode === "calendar" ? "list" : "calendar")}
-          className="bg-gray-500 text-white px-4 py-2 rounded"
-        >
-          {viewMode === "calendar" ? "Switch to List View" : "Switch to Calendar View"}
-        </button>
-      </div>
-
-      {/* Відображення календаря або списку подій в залежності від вибраного режиму */}
       {viewMode === "calendar" ? (
         <Calendar
-          events={filteredEvents} // Передаємо відфільтровані події в календар
+          events={filteredEvents} 
           onEditEvent={handleEditEvent}
           onDeleteEvent={handleDeleteSuccess}
         />
       ) : (
         <EventList
-          events={filteredEvents} // Передаємо відфільтровані події в список
+          events={filteredEvents}
           onEdit={handleEditEvent}
           onDeleteSuccess={handleDeleteSuccess}
         />

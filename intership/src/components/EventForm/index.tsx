@@ -27,7 +27,7 @@ const EventForm: React.FC<Props> = ({ initialData, eventId, onClose }) => {
           : initialData.date?.toDate?.() || new Date(initialData.date.seconds * 1000);
 
       if (!isNaN(parsedDate.getTime())) {
-        setDate(parsedDate.toISOString().slice(0, 16)); // yyyy-MM-ddTHH:mm
+        setDate(parsedDate.toISOString().slice(0, 16));
       }
 
       setDescription(initialData.description);
@@ -79,13 +79,15 @@ const EventForm: React.FC<Props> = ({ initialData, eventId, onClose }) => {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-4">{eventId ? "Edit" : "Add"} Event</h2>
+    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg ">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+        {eventId ? "Edit" : "Add"} Event
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Title"
           required
         />
@@ -93,35 +95,38 @@ const EventForm: React.FC<Props> = ({ initialData, eventId, onClose }) => {
           type="datetime-local"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="Description"
           rows={4}
         />
         <select
           value={priority}
           onChange={(e) => setPriority(e.target.value as "normal" | "important" | "critical")}
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="normal">Normal</option>
           <option value="important">Important</option>
           <option value="critical">Critical</option>
         </select>
 
-        <div className="flex gap-2">
-          <button type="submit" className="flex-1 bg-blue-500 text-white py-2 rounded">
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg shadow-md transition duration-300"
+          >
             {eventId ? "Update" : "Add"} Event
           </button>
           {eventId && (
             <button
               type="button"
               onClick={handleDelete}
-              className="flex-1 bg-red-500 text-white py-2 rounded"
+              className="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg shadow-md transition duration-300"
             >
               Delete
             </button>

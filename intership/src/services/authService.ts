@@ -1,5 +1,5 @@
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "../data/firebase"; // Твоє підключення до Firebase
+import { auth } from "../data/firebase"; 
 import { useRouter } from "next/router";
 
 export const signUpWithEmailPassword = async (email: string, password: string) => {

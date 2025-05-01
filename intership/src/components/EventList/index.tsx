@@ -17,13 +17,12 @@ const EventList: React.FC<EventListProps> = ({
 }) => {
   return (
     <div>
-      {/* Список подій */}
       <div>
         {events.length > 0 ? (
           events.map((event) => (
             <div
               key={event.id}
-              onClick={() => onEdit(event)} // Відкриваємо модалку через Dashboard
+              onClick={() => onEdit(event)}
               className="cursor-pointer"
             >
               <EventCard

@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailPassword, signInWithGoogle } from "../../services/authService";
-import { useDispatch } from "react-redux"; 
-import { setUser } from "@/store/authSlice"; // Імпортуємо екшн для оновлення стейту
+import { useDispatch } from "react-redux";
+import { setUser } from "@/store/authSlice";
 
 const SignIn = () => {
   const router = useRouter();
-  const dispatch = useDispatch(); // Ініціалізація dispatch
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,10 +19,10 @@ const SignIn = () => {
     setLoading(true);
     setError("");
 
-    const user = await signInWithEmailPassword(email, password); // Оновлено на отримання користувача
+    const user = await signInWithEmailPassword(email, password);
 
     if (user) {
-      dispatch(setUser(user)); // Оновлення стейту в Redux
+      dispatch(setUser(user));
       router.push("/home");
     } else {
       setError("Invalid credentials. Please try again.");
@@ -33,9 +33,9 @@ const SignIn = () => {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
-    const user = await signInWithGoogle(); // Оновлено на отримання користувача
+    const user = await signInWithGoogle();
     if (user) {
-      dispatch(setUser(user)); // Оновлення стейту в Redux
+      dispatch(setUser(user));
       router.push("/home");
     } else {
       setError("Failed to sign in with Google. Please try again.");
@@ -44,29 +44,49 @@ const SignIn = () => {
   };
 
   return (
-    <div>
-      <h1>Sign In</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit" disabled={loading}>
-          {loading ? "Signing In..." : "Sign In"}
-        </button>
-      </form>
-      {error && <p>{error}</p>}
-      <button onClick={handleGoogleSignIn} disabled={loading}>
-        Sign In with Google
-      </button>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">Sign In</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 rounded-lg text-white font-semibold shadow-md transition duration-300 ${
+              loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+            }`}
+          >
+            {loading ? "Signing In..." : "Sign In"}
+          </button>
+        </form>
+        {error && <p className="text-red-500 text-sm mt-4 text-center">{error}</p>}
+        <div className="mt-6">
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className={`w-full py-3 rounded-lg text-white font-semibold shadow-md transition duration-300 ${
+              loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+            }`}
+          >
+            Sign In with Google
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
