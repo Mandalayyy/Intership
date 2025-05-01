@@ -1,2 +1,8 @@
 @import "tailwindcss";
 
+.rbc-btn {
+  all: unset !important;
+  cursor: pointer;
+  padding: 4px;
+  font-size: inherit;
+}

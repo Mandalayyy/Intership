@@ -27,14 +27,14 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   // Логіка редиректу для неавторизованих користувачів
   useEffect(() => {
-    if (!user && !["/signin", "/signup", "/home", "/"].includes(pathname)) {
+    if (!user && !["/signin", "/signup"].includes(pathname)) {
       // Якщо користувач не авторизований і намагається зайти на захищену сторінку
       router.push("/signin"); // Перенаправлення на /signin
     }
 
     // Якщо користувач авторизований, і намагається зайти на /signin або /signup, редирект на /dashboard
     if (user && ["/signin", "/signup"].includes(pathname)) {
-      router.push("/dashboard");
+      router.push("/");
     }
   }, [user, router, pathname]);
 

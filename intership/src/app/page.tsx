@@ -1,14 +1,10 @@
-import Image from "next/image";
-import Link from "next/link";
+import Dashboard from "@/components/Dashboard";
 
 export default function Home() {
   return (
-    <div className="flex justify-center items-center bg-gray-100 text-gray-800">
-       <Link
-          href="/dashboard"
-        >
-         <h1 className="text-2xl">Dashboard</h1>
-        </Link>
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-semibold mb-6">Dashboard</h1>
+      <Dashboard /> {/* Тут відображаємо компонент Dashboard */}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { addDoc, collection, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, updateDoc, deleteDoc } from "firebase/firestore";
 import { db, auth } from "@/data/firebase";
 import { Event } from "@/data/events";
 
@@ -21,12 +21,13 @@ const EventForm: React.FC<Props> = ({ initialData, eventId, onClose }) => {
     if (initialData) {
       setTitle(initialData.title);
 
-      // Якщо дата є рядком, конвертуємо її в ISO формат для input type="datetime-local"
-      if (typeof initialData.date === "string") {
-        const parsedDate = new Date(initialData.date);
-        if (!isNaN(parsedDate.getTime())) {
-          setDate(parsedDate.toISOString().slice(0, 16)); // Форматуємо для datetime-local
-        }
+      const parsedDate =
+        typeof initialData.date === "string"
+          ? new Date(initialData.date)
+          : initialData.date?.toDate?.() || new Date(initialData.date.seconds * 1000);
+
+      if (!isNaN(parsedDate.getTime())) {
+        setDate(parsedDate.toISOString().slice(0, 16)); // yyyy-MM-ddTHH:mm
       }
 
       setDescription(initialData.description);
@@ -57,9 +58,23 @@ const EventForm: React.FC<Props> = ({ initialData, eventId, onClose }) => {
       } else {
         await addDoc(collection(db, "events"), data);
       }
-      if (onClose) onClose();
+      onClose?.();
     } catch (err) {
       console.error("Error saving event", err);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!eventId) return;
+
+    const confirmed = confirm("Are you sure you want to delete this event?");
+    if (!confirmed) return;
+
+    try {
+      await deleteDoc(doc(db, "events", eventId));
+      onClose?.();
+    } catch (err) {
+      console.error("Error deleting event", err);
     }
   };
 
@@ -97,9 +112,21 @@ const EventForm: React.FC<Props> = ({ initialData, eventId, onClose }) => {
           <option value="important">Important</option>
           <option value="critical">Critical</option>
         </select>
-        <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded">
-          {eventId ? "Update" : "Add"} Event
-        </button>
+
+        <div className="flex gap-2">
+          <button type="submit" className="flex-1 bg-blue-500 text-white py-2 rounded">
+            {eventId ? "Update" : "Add"} Event
+          </button>
+          {eventId && (
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="flex-1 bg-red-500 text-white py-2 rounded"
+            >
+              Delete
+            </button>
+          )}
+        </div>
       </form>
     </div>
   );
