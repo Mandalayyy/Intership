@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Event } from "@/data/events";
+import cn from "clsx";
 
 const EventCard: React.FC<{
   event: Event;
@@ -17,13 +18,14 @@ const EventCard: React.FC<{
       <div className="flex justify-between items-center">
         <h3 className="font-bold text-2xl text-gray-800">{event.title}</h3>
         <span
-          className={`inline-block rounded-full px-3 py-1 text-sm font-semibold text-white ${
-            event.priority === "critical"
-              ? "bg-red-600"
-              : event.priority === "important"
-              ? "bg-yellow-500"
-              : "bg-green-500"
-          }`}
+          className={cn(
+            "inline-block rounded-full px-3 py-1 text-sm font-semibold text-white",
+            {
+              "bg-red-600": event.priority === "critical",
+              "bg-yellow-500": event.priority === "important",
+              "bg-green-500": event.priority === "normal",
+            }
+          )}
         >
           {event.priority.charAt(0).toUpperCase() + event.priority.slice(1)}
         </span>
