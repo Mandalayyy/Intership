@@ -10,6 +10,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import { Timestamp } from "firebase/firestore";
 import { Event } from "@/data/events";
+import cn from "clsx";
 
 const localizer = momentLocalizer(moment);
 
@@ -67,16 +68,17 @@ const Calendar: React.FC<CalendarProps> = ({ events, onEditEvent }) => {
   };
 
   const eventStyleGetter = (event: Event) => {
-    let bgColor = "#3174ad";
-    if (event.priority === "important") bgColor = "#eab308";
-    if (event.priority === "critical") bgColor = "#dc2626";
+    let backgroundColor = "";
+    if (event.priority === "critical") backgroundColor = "#dc2626"; // Red
+    if (event.priority === "important") backgroundColor = "#eab308"; // Yellow
+    if (event.priority === "normal") backgroundColor = "#16a34a"; // Green
 
     return {
       style: {
-        backgroundColor: bgColor,
+        backgroundColor,
         color: "white",
-        borderRadius: "5px",
-        padding: "2px 4px",
+        borderRadius: "8px",
+        padding: "4px",
         border: "none",
       },
     };
