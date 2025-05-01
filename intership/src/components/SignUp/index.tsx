@@ -14,10 +14,31 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePassword = (password: string) => {
+    return password.length >= 6; // Мінімальна довжина пароля — 6 символів
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (!validateEmail(email)) {
+      setError("Invalid email format.");
+      setLoading(false);
+      return;
+    }
+
+    if (!validatePassword(password)) {
+      setError("Password must be at least 6 characters long.");
+      setLoading(false);
+      return;
+    }
 
     const user = await signUpWithEmailPassword(email, password);
 
@@ -32,9 +53,9 @@ const SignUp = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">Sign Up</h1>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="bg-gray-100 p-8 rounded-lg shadow-lg max-w-md w-full">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Create an Account</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="email"
@@ -63,6 +84,12 @@ const SignUp = () => {
           </button>
         </form>
         {error && <p className="text-red-500 text-sm mt-4 text-center">{error}</p>}
+        <p className="text-sm text-gray-600 mt-6 text-center">
+          Already have an account?{" "}
+          <a href="/signin" className="text-blue-500 hover:underline">
+            Sign In
+          </a>
+        </p>
       </div>
     </div>
   );
